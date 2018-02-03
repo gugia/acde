@@ -16,14 +16,19 @@ public class AirConditioning {
     private String name = "carshow";
 
     /**
-     * 模式，true=cold，false=hot
+     * 模式，1=cold，2=hot，3=vent
      */
-    private Boolean mode = true;
+    private Integer mode = 1;
 
     /**
-     * 温度
+     * 设定温度
      */
-    private Integer temperature = 20;
+    private Integer temperatureSet = 20;
+
+    /**
+     * 实际温度
+     */
+    private Integer temperatureActual = 17;
 
     /**
      * 风扇转速
@@ -91,20 +96,28 @@ public class AirConditioning {
         this.name = name;
     }
 
-    public Boolean getMode() {
+    public Integer getMode() {
         return mode;
     }
 
-    public void setMode(Boolean mode) {
+    public void setMode(Integer mode) {
         this.mode = mode;
     }
 
-    public Integer getTemperature() {
-        return temperature;
+    public Integer getTemperatureSet() {
+        return temperatureSet;
     }
 
-    public void setTemperature(Integer temperature) {
-        this.temperature = temperature;
+    public void setTemperatureSet(Integer temperatureSet) {
+        this.temperatureSet = temperatureSet;
+    }
+
+    public Integer getTemperatureActual() {
+        return temperatureActual;
+    }
+
+    public void setTemperatureActual(Integer temperatureActual) {
+        this.temperatureActual = temperatureActual;
     }
 
     public Integer getFanspeed() {

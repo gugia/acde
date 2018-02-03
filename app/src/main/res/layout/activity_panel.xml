@@ -48,31 +48,32 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:gravity="center_vertical"
+                    android:fontFamily="fonts/lgdr.ttf"
                     android:text="@string/date"
                     android:textAlignment="center"
                     android:textColor="@color/colorLightGray"
-                    android:textSize="16sp" />
+                    android:textSize="22sp" />
 
                 <ImageView
                     android:id="@+id/iv_cool"
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/icon_cool" />
+                    android:src="@drawable/icon_c1" />
 
                 <ImageView
                     android:id="@+id/iv_heat"
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/icon_heat" />
+                    android:src="@drawable/icon_h1" />
 
                 <ImageView
                     android:id="@+id/iv_vent"
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/icon_vent" />
+                    android:src="@drawable/icon_v1" />
 
             </LinearLayout>
 

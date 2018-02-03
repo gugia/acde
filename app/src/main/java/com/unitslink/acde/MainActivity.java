@@ -173,16 +173,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void refreshAll(AirConditioning airConditioning) {
         SwitchButton switchButton = (SwitchButton) findViewById(R.id.switchbtn);
-        switchButton.setChecked(airConditioning.getMode());
+        switchButton.setChecked(airConditioning.getMode() == 1);
         if (switchButton.isChecked()) {
             switchButton.setBackColorRes(R.color.colorCold);
         } else {
             switchButton.setBackColorRes(R.color.colorHot);
         }
         HoloCircleSeekBar holoCircleSeekBar = (HoloCircleSeekBar) findViewById(R.id.picker);
-        holoCircleSeekBar.setValue(airConditioning.getTemperature() - 15);
+        holoCircleSeekBar.setValue(airConditioning.getTemperatureSet() - 15);
         TextView textView_temperature = findViewById(R.id.textView_temperature);
-        textView_temperature.setText(airConditioning.getTemperature().toString());
+        textView_temperature.setText(airConditioning.getTemperatureSet().toString());
         SingleSelectToggleGroup singleSelectToggleGroup = findViewById(R.id.group_choices);
         switch (airConditioning.getFanspeed() % 5) {
             case 1:
@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(AirConditioning airConditioning) {
-                        airConditioning.setMode(mode);
+                        airConditioning.setMode(mode ? 1 : 2);
                         Call<Void> ac = acService.setAC(airConditioning);
                         ac.enqueue(new Callback<Void>() {
                             @Override
@@ -347,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(AirConditioning airConditioning) {
-                        airConditioning.setTemperature(temp);
+                        airConditioning.setTemperatureSet(temp);
                         Call<Void> ac = acService.setAC(airConditioning);
                         ac.enqueue(new Callback<Void>() {
                             @Override
