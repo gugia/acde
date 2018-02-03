@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.unitslink.acde.MainActivity">
+
+    <LinearLayout
+        android:id="@+id/mainLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/layout_mode"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@drawable/layout_border"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView_mode"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:gravity="left|center_vertical"
+                android:text="@string/mode_label"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+                android:textColor="@color/colorDarkGray" />
+
+            <com.kyleduo.switchbutton.SwitchButton
+                android:id="@+id/switchbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="25dp"
+                android:textColor="@color/colorWhite"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:kswBackColor="@color/colorHot"
+                app:kswFadeBack="true"
+                app:kswTextExtra="50dp"
+                app:kswTextOff="@string/mode_hot"
+                app:kswTextOn="@string/mode_cold"
+                app:kswThumbColor="@color/colorWhite"
+                app:kswThumbHeight="48dp"
+                app:kswThumbWidth="48dp"
+                app:kswTintColor="@color/colorCold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_temperature"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:background="@drawable/layout_border"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/layout_tempdiv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <RelativeLayout
+                    android:id="@+id/layout_tempvalue"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView_high"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:layout_marginEnd="-20dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_toStartOf="@+id/picker"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:text="@string/high"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorHot"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/textView_low"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="-20dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_toEndOf="@+id/picker"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:text="@string/low"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorCold"
+                        android:textSize="16sp" />
+
+                    <com.jesusm.holocircleseekbar.lib.HoloCircleSeekBar
+                        android:id="@+id/picker"
+                        android:layout_width="165dp"
+                        android:layout_height="170dp"
+                        android:layout_centerInParent="true"
+                        app:end_angle="330"
+                        app:init_position="1"
+                        app:max="15"
+                        app:pointer_color="#ffffff"
+                        app:pointer_halo_color="#88555555"
+                        app:pointer_size="10dp"
+                        app:show_text="false"
+                        app:start_angle="30"
+                        app:wheel_active_color="@color/colorCold"
+                        app:wheel_unactive_color="@color/colorHot" />
+
+                    <TextView
+                        android:id="@+id/textView_temperature"
+                        android:layout_width="64dp"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="-125dp"
+                        android:layout_toEndOf="@+id/picker"
+                        android:layout_weight="1"
+                        android:fontFamily="monospace"
+                        android:gravity="center_vertical"
+                        android:text="@string/temp_value"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Large"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="48sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textView_tempunit"
+                        android:layout_width="30dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="18dp"
+                        android:layout_toEndOf="@+id/textView_temperature"
+                        android:layout_weight="1"
+                        android:gravity="left|center_vertical"
+                        android:text="@string/temp_unit"
+                        android:textAppearance="@android:style/TextAppearance.DeviceDefault"
+                        android:textColor="@color/colorDarkGray"
+                        android:textSize="22sp" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/textView_tempdesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="@string/temperature_label"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+                    android:textColor="@color/colorDarkGray"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <!--<SeekBar-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_marginEnd="15dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:max="30"-->
+            <!--android:maxHeight="8dp"-->
+            <!--android:min="15"-->
+            <!--android:minHeight="8dp"-->
+            <!--android:progressDrawable="@drawable/seekbar_background"-->
+            <!--android:thumb="@drawable/circle" />-->
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_fanspeed"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@drawable/layout_border"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView_fanspeed"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:gravity="left|center_vertical"
+                android:text="@string/fanspeed_label"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+                android:textColor="@color/colorDarkGray" />
+
+            <com.nex3z.togglebuttongroup.SingleSelectToggleGroup
+                android:id="@+id/group_choices"
+                android:layout_width="200dp"
+                android:layout_height="match_parent"
+                app:tbgCheckedButton="@+id/fs1">
+
+                <com.nex3z.togglebuttongroup.button.CircularToggle
+                    android:id="@+id/fs1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/num1"
+                    android:textSize="18sp" />
+
+                <com.nex3z.togglebuttongroup.button.CircularToggle
+                    android:id="@+id/fs2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/num2"
+                    android:textSize="18sp" />
+
+                <com.nex3z.togglebuttongroup.button.CircularToggle
+                    android:id="@+id/fs3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/num3"
+                    android:textSize="18sp" />
+
+                <com.nex3z.togglebuttongroup.button.CircularToggle
+                    android:id="@+id/fs4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/num4"
+                    android:textSize="18sp" />
+
+                <com.nex3z.togglebuttongroup.button.CircularToggle
+                    android:id="@+id/fs5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/num5"
+                    android:textSize="18sp" />
+            </com.nex3z.togglebuttongroup.SingleSelectToggleGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_alarm"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@drawable/layout_press"
+            android:clickable="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView_alarm"
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:layout_marginStart="20dp"
+                android:layout_weight="0"
+                android:gravity="left|center_vertical"
+                android:text="@string/alarm_label"
+                android:textColor="@color/colorDarkGray"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView_alarmicon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_weight="0"
+                android:gravity="left|center_vertical"
+                android:text="@string/alarm_go"
+                android:textColor="@color/colorDarkGray"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView_codeby"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="bottom"
+            android:text="@string/codeby"
+            android:textAlignment="center"
+            android:textColor="@color/colorLightGray"
+            android:textSize="10sp" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

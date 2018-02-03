@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Bergstrom HVAC Control Panel</string>
+    <string name="mode_label">AC MODE</string>
+    <string name="mode_cold">Cool</string>
+    <string name="mode_hot">Warm</string>
+    <string name="high">HIGH</string>
+    <string name="low">LOW</string>
+    <string name="temperature_label">TEMPERATURE PANEL</string>
+    <string name="fanspeed_label">FAN SPEED</string>
+    <string name="temp_unit">℃</string>
+    <string name="temp_value">15</string>
+    <string name="num1">1</string>
+    <string name="num2">2</string>
+    <string name="num3">3</string>
+    <string name="num4">4</string>
+    <string name="num5">5</string>
+    <string name="alarm_label">ALARM CONFIG</string>
+    <string name="alarm_go">Click here to configure every alarm signal of airconditioning.</string>
+    <string name="codeby">Code by Unitslink.com</string>
+    <string name="volt">VOLT ALARM</string>
+    <string name="current">CURRENT ALARM</string>
+    <string name="pressure">PRESSURE ALARM</string>
+    <string name="temp">TEMPERATURE ALARM</string>
+    <string name="on">ON</string>
+    <string name="off">OFF</string>
+    <string name="date">2018/01/31</string>
+    <string name="cooling">Cooling</string>
+    <string name="heating">Heating</string>
+    <string name="ventilation">Ventilation</string>
+    <string name="datasend">Data Send</string>
+</resources>
