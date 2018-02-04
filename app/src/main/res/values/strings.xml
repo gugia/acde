@@ -8,7 +8,7 @@
     <string name="temperature_label">TEMPERATURE PANEL</string>
     <string name="fanspeed_label">FAN SPEED</string>
     <string name="temp_unit">℃</string>
-    <string name="temp_value">15</string>
+    <string name="temp_value">16</string>
     <string name="num1">1</string>
     <string name="num2">2</string>
     <string name="num3">3</string>

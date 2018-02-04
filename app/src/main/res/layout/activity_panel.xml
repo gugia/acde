@@ -40,7 +40,7 @@
                 android:layout_height="45dp"
                 android:orientation="horizontal">
 
-                <com.unitslink.acde.DigitalTextView
+                <TextView
                     android:id="@+id/tv_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -48,7 +48,6 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:gravity="center_vertical"
-                    android:fontFamily="fonts/lgdr.ttf"
                     android:text="@string/date"
                     android:textAlignment="center"
                     android:textColor="@color/colorLightGray"
@@ -59,6 +58,7 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="4dp"
                     android:src="@drawable/icon_c1" />
 
                 <ImageView
@@ -66,6 +66,7 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="4dp"
                     android:src="@drawable/icon_h1" />
 
                 <ImageView
@@ -93,7 +94,7 @@
                     android:layout_marginStart="10dp"
                     android:isIndicator="true"
                     android:numStars="5"
-                    android:rating="1"
+                    android:rating="0"
                     android:stepSize="1" />
 
                 <RelativeLayout
@@ -111,7 +112,7 @@
                         android:fontFamily="monospace"
                         android:gravity="bottom"
                         android:text="@string/temp_value"
-                        android:textColor="@color/colorSky"
+                        android:textColor="@color/colorLightGray"
                         android:textSize="48sp"
                         android:textStyle="bold" />
 
@@ -124,7 +125,7 @@
                         android:layout_toEndOf="@+id/tv_temp"
                         android:gravity="bottom"
                         android:text="@string/temp_unit"
-                        android:textColor="@color/colorSky"
+                        android:textColor="@color/colorLightGray"
                         android:textSize="26sp" />
                 </RelativeLayout>
             </LinearLayout>
@@ -133,7 +134,7 @@
         <RelativeLayout
             android:id="@+id/rl_center"
             android:layout_width="match_parent"
-            android:layout_height="260dp"
+            android:layout_height="255dp"
             android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="15dp"
@@ -149,27 +150,30 @@
                 android:src="@drawable/bridge" />
 
             <me.tankery.lib.circularseekbar.CircularSeekBar
-                android:id="@+id/circularSeekBar1"
-                android:layout_width="210dp"
-                android:layout_height="210dp"
+                android:id="@+id/csb"
+                android:layout_width="190dp"
+                android:layout_height="190dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="65dp"
                 app:cs_circle_color="@color/colorGray"
                 app:cs_circle_progress_color="@color/colorSky"
                 app:cs_circle_stroke_width="2dp"
                 app:cs_end_angle="360"
-                app:cs_pointer_halo_border_width="15dp"
-                app:cs_pointer_halo_width="8dp"
+                app:cs_max="15"
+                app:cs_pointer_halo_border_width="8dp"
+                app:cs_pointer_halo_width="5dp"
                 app:cs_pointer_stroke_width="15dp"
+                app:cs_progress="0"
                 app:cs_start_angle="180" />
 
             <Button
                 android:id="@+id/btn_power"
-                android:layout_width="130dp"
-                android:layout_height="130dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="95dp"
-                android:background="@drawable/btn_circle"
+                android:layout_marginTop="104dp"
+                android:background="@drawable/btn_o_selector"
+                android:onClick="btn_power_onClick"
                 android:text="" />
         </RelativeLayout>
 
@@ -185,14 +189,16 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginEnd="30dp"
-                android:background="@drawable/btn_circle"
+                android:background="@drawable/btn_c_selector"
+                android:onClick="btn_cool_onClick"
                 android:text="" />
 
             <Button
                 android:id="@+id/btn_heat"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:background="@drawable/btn_circle"
+                android:background="@drawable/btn_h_selector"
+                android:onClick="btn_heat_onClick"
                 android:text="" />
 
             <Button
@@ -200,7 +206,8 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginStart="30dp"
-                android:background="@drawable/btn_circle"
+                android:background="@drawable/btn_v_selector"
+                android:onClick="btn_vent_onClick"
                 android:text="" />
         </LinearLayout>
 
@@ -243,20 +250,40 @@
                 android:textSize="15sp" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/ll_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginTop="15dp"
-            android:gravity="center_horizontal|top"
-            android:orientation="vertical">
+        <RelativeLayout
+            android:id="@+id/rl_bottom"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:layout_gravity="center">
+
+            <com.timqi.sectorprogressview.ColorfulRingProgressView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/crpv"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:visibility="invisible"
+                app:bgColor="#e1e1e1"
+                app:fgColorEnd="#ff4800"
+                app:fgColorStart="#ffe400"
+                app:percent="25"
+                app:startAngle="0"
+                app:strokeWidth="4dp" />
 
             <Button
                 android:id="@+id/btn_send"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:background="@drawable/btn_circle"
+                android:layout_centerInParent="true"
+                android:background="@drawable/btn_s_selector"
+                android:onClick="btn_send_onClick"
                 android:text="" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|top"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_send"
