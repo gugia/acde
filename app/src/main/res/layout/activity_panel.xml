@@ -28,16 +28,16 @@
         <LinearLayout
             android:id="@+id/ll_topbg"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
+            android:layout_height="100dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="25dp"
             android:background="@drawable/panel_top_background"
             android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/ll_topbg_up"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="35dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -46,33 +46,33 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="5dp"
                     android:gravity="center_vertical"
                     android:text="@string/date"
                     android:textAlignment="center"
                     android:textColor="@color/colorLightGray"
-                    android:textSize="22sp" />
+                    android:textSize="20sp" />
 
                 <ImageView
                     android:id="@+id/iv_cool"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="4dp"
                     android:src="@drawable/icon_c1" />
 
                 <ImageView
                     android:id="@+id/iv_heat"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="4dp"
                     android:src="@drawable/icon_h1" />
 
                 <ImageView
                     android:id="@+id/iv_vent"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/icon_v1" />
 
@@ -87,11 +87,11 @@
                 <RatingBar
                     android:id="@+id/rb_vent"
                     style="@style/ventRatingBar"
-                    android:layout_width="150dp"
-                    android:layout_height="30dp"
+                    android:layout_width="125dp"
+                    android:layout_height="25dp"
                     android:layout_gravity="bottom"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="15dp"
                     android:isIndicator="true"
                     android:numStars="5"
                     android:rating="0"
@@ -190,6 +190,7 @@
                 android:layout_height="60dp"
                 android:layout_marginEnd="30dp"
                 android:background="@drawable/btn_c_selector"
+                android:enabled="false"
                 android:onClick="btn_cool_onClick"
                 android:text="" />
 
@@ -198,6 +199,7 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:background="@drawable/btn_h_selector"
+                android:enabled="false"
                 android:onClick="btn_heat_onClick"
                 android:text="" />
 
@@ -207,6 +209,7 @@
                 android:layout_height="60dp"
                 android:layout_marginStart="30dp"
                 android:background="@drawable/btn_v_selector"
+                android:enabled="false"
                 android:onClick="btn_vent_onClick"
                 android:text="" />
         </LinearLayout>
@@ -274,6 +277,7 @@
                 android:layout_height="60dp"
                 android:layout_centerInParent="true"
                 android:background="@drawable/btn_s_selector"
+                android:enabled="false"
                 android:onClick="btn_send_onClick"
                 android:text="" />
         </RelativeLayout>

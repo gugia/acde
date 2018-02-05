@@ -1,14 +1,21 @@
 package com.unitslink.acde;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -16,6 +23,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.kyleduo.switchbutton.SwitchButton;
@@ -24,6 +32,7 @@ import com.timqi.sectorprogressview.ColorfulRingProgressView;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -57,6 +66,7 @@ public class PanelActivity extends AppCompatActivity {
 
     AcService acService;
     AirConditioning ac = new AirConditioning();
+
     int mode = 1;
     int temperature = 16;
     int fanspeed = 1;
@@ -77,6 +87,9 @@ public class PanelActivity extends AppCompatActivity {
     ImageView iv_vent;
     TextView tv_temp;
     TextView tv_tempunit;
+    TextView tv_cooldesc;
+    TextView tv_heatdesc;
+    TextView tv_ventdesc;
     ColorfulRingProgressView crpv;
 
     @Override
@@ -84,6 +97,7 @@ public class PanelActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_panel);
         initUI();
+        initPermission();
         initAcService();
         startDataSync();
     }
@@ -108,6 +122,9 @@ public class PanelActivity extends AppCompatActivity {
         btn_send = findViewById(R.id.btn_send);
         tv_temp = findViewById(R.id.tv_temp);
         tv_tempunit = findViewById(R.id.tv_tempunit);
+        tv_cooldesc = findViewById(R.id.tv_cooldesc);
+        tv_heatdesc = findViewById(R.id.tv_heatdesc);
+        tv_ventdesc = findViewById(R.id.tv_ventdesc);
         crpv = findViewById(R.id.crpv);
         csb.setEnabled(false);
         csb.setOnSeekBarChangeListener(new CircularSeekBar.OnCircularSeekBarChangeListener() {
@@ -145,6 +162,18 @@ public class PanelActivity extends AppCompatActivity {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
         acService = retrofit.create(AcService.class);
+    }
+
+    private void initPermission() {
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //检查权限
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                //请求权限
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+        }
     }
 
     public void btn_power_onClick(View view) {
@@ -206,6 +235,9 @@ public class PanelActivity extends AppCompatActivity {
                             //csb.setProgress(0);
                             tv_temp.setTextColor(getResources().getColor(R.color.colorLightGray));
                             tv_tempunit.setTextColor(getResources().getColor(R.color.colorLightGray));
+                            tv_cooldesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
+                            tv_heatdesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
+                            tv_ventdesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
                         }
                         onDataSync(ac);
                     }
@@ -237,7 +269,7 @@ public class PanelActivity extends AppCompatActivity {
                     @Override
                     public void onNext(Long aLong) {
                         Log.d("TAG", "aLong=".concat(aLong.toString()));
-                        if (aLong > delta) {
+                        if (aLong >= delta) {
                             return;
                         }
                         float i = csb.getProgress();
@@ -264,6 +296,9 @@ public class PanelActivity extends AppCompatActivity {
         btn_cool.setEnabled(false);
         btn_heat.setEnabled(true);
         btn_vent.setEnabled(true);
+        tv_cooldesc.setTextColor(getResources().getColor(R.color.colorPrimary));
+        tv_heatdesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
+        tv_ventdesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
         iv_cool.setImageResource(R.drawable.icon_c2);
         iv_heat.setImageResource(R.drawable.icon_h1);
         iv_vent.setImageResource(R.drawable.icon_v1);
@@ -275,6 +310,9 @@ public class PanelActivity extends AppCompatActivity {
         btn_cool.setEnabled(true);
         btn_heat.setEnabled(false);
         btn_vent.setEnabled(true);
+        tv_cooldesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
+        tv_heatdesc.setTextColor(getResources().getColor(R.color.colorPrimary));
+        tv_ventdesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
         iv_cool.setImageResource(R.drawable.icon_c1);
         iv_heat.setImageResource(R.drawable.icon_h2);
         iv_vent.setImageResource(R.drawable.icon_v1);
@@ -286,6 +324,9 @@ public class PanelActivity extends AppCompatActivity {
         btn_cool.setEnabled(true);
         btn_heat.setEnabled(true);
         btn_vent.setEnabled(false);
+        tv_cooldesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
+        tv_heatdesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
+        tv_ventdesc.setTextColor(getResources().getColor(R.color.colorPrimary));
         iv_cool.setImageResource(R.drawable.icon_c1);
         iv_heat.setImageResource(R.drawable.icon_h1);
         iv_vent.setImageResource(R.drawable.icon_v2);
@@ -295,6 +336,7 @@ public class PanelActivity extends AppCompatActivity {
         crpv.setVisibility(View.VISIBLE);
         crpv.animateIndeterminate();
         setData();
+        sendLocation();
     }
 
     private void startDataSync() {
@@ -371,20 +413,20 @@ public class PanelActivity extends AppCompatActivity {
         switch (airConditioning.getMode()) {
             case 1:
                 btn_cool_onClick(null);
-                csb_animate(temp - 15);
+                csb_animate(temp - 16);
                 //csb.setProgress(temp - 16);
                 break;
             case 2:
                 btn_heat_onClick(null);
-                csb_animate(temp - 15);
+                csb_animate(temp - 16);
                 break;
             case 3:
                 btn_vent_onClick(null);
-                csb_animate(15 * rating / 5);
+                csb_animate(16 * rating / 5);
                 break;
             default:
                 btn_cool_onClick(null);
-                csb_animate(temp - 15);
+                csb_animate(temp - 16);
         }
         rb_vent.setRating(rating);
     }
@@ -399,6 +441,7 @@ public class PanelActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.d("TAG", "修改数据成功");
+                Toast.makeText(PanelActivity.this, "Data send successfully.", Toast.LENGTH_SHORT).show();
                 modified = false;
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
@@ -411,6 +454,7 @@ public class PanelActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.d("TAG", "修改数据失败");
+                Toast.makeText(PanelActivity.this, "Data sending failed, please check your network.", Toast.LENGTH_SHORT).show();
                 modified = false;
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
@@ -420,5 +464,49 @@ public class PanelActivity extends AppCompatActivity {
                 }, 1200);
             }
         });
+    }
+
+    private Location locate() {
+        Location location;
+        List<String> prodiverlist = locationManager.getProviders(true);
+        String provider = "";
+        if (prodiverlist.contains(LocationManager.NETWORK_PROVIDER)) {
+            provider = LocationManager.NETWORK_PROVIDER;
+        } else if (prodiverlist.contains(LocationManager.GPS_PROVIDER)) {
+            provider = LocationManager.GPS_PROVIDER;
+        } else {
+            Toast.makeText(this, "No available location provider.", Toast.LENGTH_SHORT).show();
+        }
+        if (!TextUtils.isEmpty(provider)) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                location = null;
+            }
+            location = locationManager.getLastKnownLocation(provider);
+        } else {
+            location = null;
+        }
+        return location;
+    }
+
+    private void sendLocation() {
+        Location loc = locate();
+        if (null != loc) {
+            com.unitslink.acde.Location location = new com.unitslink.acde.Location();
+            Double[] coordinates = {loc.getLongitude(), loc.getLatitude()};
+            location.setCoordinates(coordinates);
+            Call<Void> voidCall = acService.setLocation(location);
+            voidCall.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    Log.d("TAG", "发送定位成功");
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Log.d("TAG", "发送定位失败");
+                    Toast.makeText(PanelActivity.this, "Failed to send location data.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }

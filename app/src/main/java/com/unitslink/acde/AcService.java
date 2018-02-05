@@ -21,4 +21,7 @@ public interface AcService {
 
     @POST("ac/set")
     Call<Void> setAC(@Body AirConditioning airConditioning);
+
+    @POST("location/set")
+    Call<Void> setLocation(@Body Location location);
 }

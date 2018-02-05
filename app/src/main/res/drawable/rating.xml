@@ -2,11 +2,11 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@android:id/background"
-        android:drawable="@drawable/rt"></item>
+        android:drawable="@drawable/icon_rb1"></item>
     <item
         android:id="@android:id/secondaryProgress"
-        android:drawable="@drawable/rt"></item>
+        android:drawable="@drawable/icon_rb1"></item>
     <item
         android:id="@android:id/progress"
-        android:drawable="@drawable/rt_active"></item>
+        android:drawable="@drawable/icon_rb2"></item>
 </layer-list>
