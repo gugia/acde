@@ -48,8 +48,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class PanelActivity extends AppCompatActivity {
 
     public static boolean admin = false;
-    //    private final String url = "http://39.104.114.111";
-    public static final String url = "http://192.168.4.103";
+    private final String url = "http://39.104.114.111";
+//    public static final String url = "http://192.168.4.103";
 
     private boolean power = false;
     private boolean powerWill = false;
@@ -200,12 +200,13 @@ public class PanelActivity extends AppCompatActivity {
             public void onStopTrackingTouch(CircularSeekBar seekBar) {
                 ac.setTemperatureSet(temperature);
                 ac.setFanspeed(fanspeed);
+                modified = false;
                 setAcDataImmediately();
             }
 
             @Override
             public void onStartTrackingTouch(CircularSeekBar seekBar) {
-//                modified = true;
+                modified = true;
             }
         });
     }
