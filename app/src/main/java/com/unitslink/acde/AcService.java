@@ -24,4 +24,10 @@ public interface AcService {
 
     @POST("location/set")
     Call<Void> setLocation(@Body Location location);
+
+    @POST("admin/set")
+    Call<String> setAdmin(@Body String pwd);
+
+    @GET("admin/get")
+    Call<String> getAdmin();
 }

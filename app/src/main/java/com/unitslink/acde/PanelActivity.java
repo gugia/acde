@@ -1,50 +1,40 @@
 package com.unitslink.acde;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ethanco.lib.PasswordDialog;
+import com.ethanco.lib.abs.OnPositiveButtonListener;
 import com.google.gson.Gson;
-import com.kyleduo.switchbutton.SwitchButton;
+import com.google.gson.GsonBuilder;
 import com.timqi.sectorprogressview.ColorfulRingProgressView;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.ObservableTransformer;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import me.tankery.lib.circularseekbar.CircularSeekBar;
@@ -57,8 +47,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PanelActivity extends AppCompatActivity {
 
-    private final String url = "http://39.104.114.111";
-//    public static final String url = "http://192.168.200.112";
+    public static boolean admin = false;
+    //    private final String url = "http://39.104.114.111";
+    public static final String url = "http://192.168.4.103";
 
     private boolean power = false;
     private boolean powerWill = false;
@@ -75,6 +66,7 @@ public class PanelActivity extends AppCompatActivity {
 
     LocationManager locationManager;
 
+    TextView tv_appname;
     RatingBar rb_vent;
     CircularSeekBar csb;
     Button btn_power;
@@ -110,6 +102,7 @@ public class PanelActivity extends AppCompatActivity {
         tvDate.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/lgdr.ttf"));
         tvDate.setText(new SimpleDateFormat("yyyy/MM/dd").format(new Date()));
         //tvDate.setTextSize();
+        tv_appname = findViewById(R.id.tv_appname);
         rb_vent = findViewById(R.id.rb_vent);
         csb = findViewById(R.id.csb);
         btn_power = findViewById(R.id.btn_power);
@@ -126,6 +119,66 @@ public class PanelActivity extends AppCompatActivity {
         tv_heatdesc = findViewById(R.id.tv_heatdesc);
         tv_ventdesc = findViewById(R.id.tv_ventdesc);
         crpv = findViewById(R.id.crpv);
+        tv_appname.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (admin) {
+                    Call<String> call = acService.setAdmin("4321");
+                    call.enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            Toast.makeText(PanelActivity.this, "Exit exclusive mode.", Toast.LENGTH_SHORT).show();
+                            admin = false;
+                            tv_appname.setTextColor(getResources().getColor(R.color.colorDarkGray));
+                        }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+                            Toast.makeText(PanelActivity.this,
+                                    "Failed to exit exclusive mode, please check your network.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    PasswordDialog.Builder builder = new PasswordDialog.Builder(PanelActivity.this)
+                            .setTitle("Please input_password")
+                            .setBoxCount(4) //设置密码位数
+                            .setBorderNotFocusedColor(R.color.colorSecondaryText)
+                            .setDotNotFocusedColor(R.color.colorSecondaryText)//密码圆点颜色
+                            .setPositiveListener(new OnPositiveButtonListener() {
+                                @Override //确定
+                                public void onPositiveClick(DialogInterface dialog, int which, String text) {
+                                    if (TextUtils.isEmpty(text)) {
+                                        return;
+                                    }
+                                    Call<String> call = acService.setAdmin(text.trim());
+                                    call.enqueue(new Callback<String>() {
+                                        @Override
+                                        public void onResponse(Call<String> call, Response<String> response) {
+                                            String result = response.body();
+                                            Log.d("TAG", "setAdmin() return ".concat(result));
+                                            if ("success".equals(result)) {
+                                                Toast.makeText(PanelActivity.this, "Enter exclusive mode.", Toast.LENGTH_SHORT).show();
+                                                admin = true;
+                                                tv_appname.setTextColor(getResources().getColor(R.color.colorPrimary));
+                                            } else {
+                                                Toast.makeText(PanelActivity.this, "Wrong password.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<String> call, Throwable t) {
+                                            Log.d("ERROR", t.toString());
+                                            Toast.makeText(PanelActivity.this,
+                                                    "Failed to enter exclusive mode, please check your network.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            });
+                    builder.create().show();
+                }
+                return true;
+            }
+        });
         csb.setEnabled(false);
         csb.setOnSeekBarChangeListener(new CircularSeekBar.OnCircularSeekBarChangeListener() {
             @Override
@@ -145,20 +198,25 @@ public class PanelActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(CircularSeekBar seekBar) {
-
+                ac.setTemperatureSet(temperature);
+                ac.setFanspeed(fanspeed);
+                setAcDataImmediately();
             }
 
             @Override
             public void onStartTrackingTouch(CircularSeekBar seekBar) {
-                modified = true;
+//                modified = true;
             }
         });
     }
 
     private void initAcService() {
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
         acService = retrofit.create(AcService.class);
@@ -217,7 +275,7 @@ public class PanelActivity extends AppCompatActivity {
                     public void onComplete() {
                         power = !power;
                         powerWill = power;
-                        modified = false;
+//                        modified = false;
                         csb.setEnabled(power);
                         btn_cool.setEnabled(power);
                         btn_heat.setEnabled(power);
@@ -291,7 +349,7 @@ public class PanelActivity extends AppCompatActivity {
     }
 
     public void btn_cool_onClick(View view) {
-        modified = true;
+//        modified = true;
         mode = 1;
         btn_cool.setEnabled(false);
         btn_heat.setEnabled(true);
@@ -302,10 +360,14 @@ public class PanelActivity extends AppCompatActivity {
         iv_cool.setImageResource(R.drawable.icon_c2);
         iv_heat.setImageResource(R.drawable.icon_h1);
         iv_vent.setImageResource(R.drawable.icon_v1);
+        if (view != null) {
+            ac.setMode(mode);
+            setAcDataImmediately();
+        }
     }
 
     public void btn_heat_onClick(View view) {
-        modified = true;
+//        modified = true;
         mode = 2;
         btn_cool.setEnabled(true);
         btn_heat.setEnabled(false);
@@ -316,10 +378,14 @@ public class PanelActivity extends AppCompatActivity {
         iv_cool.setImageResource(R.drawable.icon_c1);
         iv_heat.setImageResource(R.drawable.icon_h2);
         iv_vent.setImageResource(R.drawable.icon_v1);
+        if (view != null) {
+            ac.setMode(mode);
+            setAcDataImmediately();
+        }
     }
 
     public void btn_vent_onClick(View view) {
-        modified = true;
+//        modified = true;
         mode = 3;
         btn_cool.setEnabled(true);
         btn_heat.setEnabled(true);
@@ -330,12 +396,16 @@ public class PanelActivity extends AppCompatActivity {
         iv_cool.setImageResource(R.drawable.icon_c1);
         iv_heat.setImageResource(R.drawable.icon_h1);
         iv_vent.setImageResource(R.drawable.icon_v2);
+        if (view != null) {
+            ac.setMode(mode);
+            setAcDataImmediately();
+        }
     }
 
     public void btn_send_onClick(View view) {
         crpv.setVisibility(View.VISIBLE);
         crpv.animateIndeterminate();
-        setData();
+        setAcData();
         sendLocation();
     }
 
@@ -431,18 +501,22 @@ public class PanelActivity extends AppCompatActivity {
         rb_vent.setRating(rating);
     }
 
-    private void setData() {
+    private void setAcData() {
         AirConditioning airConditioning = ac;
         airConditioning.setMode(mode);
         airConditioning.setTemperatureSet(temperature);
         airConditioning.setFanspeed(fanspeed);
+        airConditioning.setCurrentAlarm(RandomUtils.randomBool());
+        airConditioning.setPressureAlarm(RandomUtils.randomBool());
+        airConditioning.setVoltAlarm(RandomUtils.randomBool());
+        airConditioning.setTemperatureAlarm(RandomUtils.randomBool());
         Call<Void> call = acService.setAC(airConditioning);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.d("TAG", "修改数据成功");
                 Toast.makeText(PanelActivity.this, "Data send successfully.", Toast.LENGTH_SHORT).show();
-                modified = false;
+//                modified = false;
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
                         crpv.stopAnimateIndeterminate();
@@ -455,13 +529,31 @@ public class PanelActivity extends AppCompatActivity {
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.d("TAG", "修改数据失败");
                 Toast.makeText(PanelActivity.this, "Data sending failed, please check your network.", Toast.LENGTH_SHORT).show();
-                modified = false;
+//                modified = false;
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
                         crpv.stopAnimateIndeterminate();
                         crpv.setVisibility(View.INVISIBLE);
                     }
                 }, 1200);
+            }
+        });
+    }
+
+    private void setAcDataImmediately() {
+        modified = true;
+        Call<Void> call = acService.setAC(ac);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.d("TAG", "修改数据成功");
+                modified = false;
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.d("TAG", "修改数据失败");
+                modified = false;
             }
         });
     }
