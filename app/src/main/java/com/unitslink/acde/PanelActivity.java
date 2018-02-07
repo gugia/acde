@@ -5,10 +5,12 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -49,7 +51,7 @@ public class PanelActivity extends AppCompatActivity {
 
     public static boolean admin = false;
     private final String url = "http://39.104.114.111";
-//    public static final String url = "http://192.168.4.103";
+//    public static final String url = "http://192.168.200.128";
 
     private boolean power = false;
     private boolean powerWill = false;
@@ -563,10 +565,10 @@ public class PanelActivity extends AppCompatActivity {
         Location location;
         List<String> prodiverlist = locationManager.getProviders(true);
         String provider = "";
-        if (prodiverlist.contains(LocationManager.NETWORK_PROVIDER)) {
-            provider = LocationManager.NETWORK_PROVIDER;
-        } else if (prodiverlist.contains(LocationManager.GPS_PROVIDER)) {
+        if (prodiverlist.contains(LocationManager.GPS_PROVIDER)) {
             provider = LocationManager.GPS_PROVIDER;
+        } else if (prodiverlist.contains(LocationManager.NETWORK_PROVIDER)) {
+            provider = LocationManager.NETWORK_PROVIDER;
         } else {
             Toast.makeText(this, "No available location provider.", Toast.LENGTH_SHORT).show();
         }
@@ -575,9 +577,13 @@ public class PanelActivity extends AppCompatActivity {
                 location = null;
             }
             location = locationManager.getLastKnownLocation(provider);
+//            CarLocationListener listener = new CarLocationListener(PanelActivity.this, acService);
+//            locationManager.requestSingleUpdate(provider, listener, Looper.getMainLooper());
         } else {
             location = null;
         }
+        Log.d("TAG", "经度".concat(String.valueOf(location.getLongitude())));
+        Log.d("TAG", "纬度".concat(String.valueOf(location.getLatitude())));
         return location;
     }
 
