@@ -37,5 +37,5 @@ dependencies {
     compile 'com.timqi.sectorprogressview:library:2.0.1'
     compile 'me.tankery.lib:circularSeekBar:1.1.4'
     compile 'com.github.EthanCo:PasswordInput:1.5.2'
-
+    compile 'com.github.d-max:spots-dialog:0.7@aar'
 }

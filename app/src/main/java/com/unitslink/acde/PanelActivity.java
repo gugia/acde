@@ -1,6 +1,7 @@
 package com.unitslink.acde;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -33,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import dmax.dialog.SpotsDialog;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -50,8 +52,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class PanelActivity extends AppCompatActivity {
 
     public static boolean admin = false;
-    private final String url = "http://39.104.114.111";
-//    public static final String url = "http://192.168.200.128";
+    //    private final String url = "http://39.104.114.111";
+    public static final String url = "http://10.0.0.12";
 
     private boolean power = false;
     private boolean powerWill = false;
@@ -63,6 +65,7 @@ public class PanelActivity extends AppCompatActivity {
     int mode = 1;
     int temperature = 16;
     int fanspeed = 1;
+    float delta = 0F;
 
     Gson gson = new Gson();
 
@@ -85,6 +88,9 @@ public class PanelActivity extends AppCompatActivity {
     TextView tv_heatdesc;
     TextView tv_ventdesc;
     ColorfulRingProgressView crpv;
+
+    SpotsDialog dialog;
+    SpotsDialog dialogLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,77 +245,135 @@ public class PanelActivity extends AppCompatActivity {
 
     public void btn_power_onClick(View view) {
         powerWill = !power;
-        csb.setProgress(0);
-        Observable.interval(20, TimeUnit.MILLISECONDS)
-                .takeUntil(new Predicate<Long>() {
-                    @Override
-                    public boolean test(Long aLong) throws Exception {
-                        if (!powerWill) {
-                            return true;
-                        }
-                        return aLong > 50;
-                    }
-                })
-                .subscribeOn(Schedulers.single())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Long>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
+        if (null != view) {
+            ac.setPower(powerWill);
+            Call<Void> call = acService.setAC(ac);
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    Log.d("TAG", "修改数据成功");
+                    modified = false;
+                    dialog = new SpotsDialog(PanelActivity.this, powerWill ? R.style.diagStart : R.style.diagStop);
+                    dialog.show();
+                    Observable.interval(500, TimeUnit.MILLISECONDS)
+                            .takeUntil(new Predicate<Long>() {
+                                @Override
+                                public boolean test(Long aLong) throws Exception {
+                                    return aLong == 2;
+                                }
+                            })
+                            .subscribeOn(Schedulers.single())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Observer<Long>() {
+                                @Override
+                                public void onSubscribe(Disposable d) {
 
-                    }
+                                }
 
-                    @Override
-                    public void onNext(Long aLong) {
-                        Log.d("TAG", "aLong=".concat(aLong.toString()));
-                        float progress = csb.getProgress();
-                        if (aLong > 25) {
-                            csb.setProgress(progress - 0.6F);
-                        } else {
-                            csb.setProgress(progress + 0.6F);
-                        }
-                    }
+                                @Override
+                                public void onNext(Long aLong) {
+                                }
 
-                    @Override
-                    public void onError(Throwable e) {
+                                @Override
+                                public void onError(Throwable e) {
 
-                    }
+                                }
 
-                    @Override
-                    public void onComplete() {
-                        power = !power;
-                        powerWill = power;
+                                @Override
+                                public void onComplete() {
+                                    dialog.dismiss();
+                                }
+                            });
+                    Observable.interval(20, TimeUnit.MILLISECONDS)
+                            .takeUntil(new Predicate<Long>() {
+                                @Override
+                                public boolean test(Long aLong) throws Exception {
+                                    return aLong > 48;
+                                }
+                            })
+                            .subscribeOn(Schedulers.single())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Observer<Long>() {
+                                @Override
+                                public void onSubscribe(Disposable d) {
+                                    delta = 0;
+                                    if (powerWill) {
+                                        csb.setProgress(0);
+                                    }
+                                }
+
+                                @Override
+                                public void onNext(Long aLong) {
+                                    Log.d("TAG", "aLong=".concat(aLong.toString()));
+                                    float progress = csb.getProgress();
+                                    float x = 0.5F - delta;
+                                    if (x < 0.2F) {
+                                        x = 0.2F;
+                                    }
+                                    if (powerWill) {
+                                        if (progress >= 14.5F) {
+                                            return;
+                                        }
+                                        csb.setProgress(progress + x);
+                                    } else {
+                                        if (progress <= 0.5F) {
+                                            return;
+                                        }
+                                        csb.setProgress(progress - x);
+                                    }
+                                    delta += 0.01F;
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                    power = !power;
+                                    powerWill = power;
 //                        modified = false;
-                        csb.setEnabled(power);
-                        btn_cool.setEnabled(power);
-                        btn_heat.setEnabled(power);
-                        btn_vent.setEnabled(power);
-                        btn_send.setEnabled(power);
-                        csb.setProgress(0);
-                        if (power) {
-                            tv_temp.setTextColor(getResources().getColor(R.color.colorSky));
-                            tv_tempunit.setTextColor(getResources().getColor(R.color.colorSky));
-                        } else {
-                            iv_cool.setImageResource(R.drawable.icon_c1);
-                            iv_heat.setImageResource(R.drawable.icon_h1);
-                            iv_vent.setImageResource(R.drawable.icon_v1);
-                            rb_vent.setRating(0);
-                            //csb.setProgress(0);
-                            tv_temp.setTextColor(getResources().getColor(R.color.colorLightGray));
-                            tv_tempunit.setTextColor(getResources().getColor(R.color.colorLightGray));
-                            tv_cooldesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
-                            tv_heatdesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
-                            tv_ventdesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
-                        }
-                        onDataSync(ac);
-                    }
-                });
+                                    csb.setEnabled(power);
+                                    btn_cool.setEnabled(power);
+                                    btn_heat.setEnabled(power);
+                                    btn_vent.setEnabled(power);
+                                    btn_send.setEnabled(power);
+                                    //csb.setProgress(0);
+                                    if (power) {
+                                        tv_temp.setTextColor(getResources().getColor(R.color.colorSky));
+                                        tv_tempunit.setTextColor(getResources().getColor(R.color.colorSky));
+                                        //onDataSync(ac);
+                                    } else {
+                                        iv_cool.setImageResource(R.drawable.icon_c1);
+                                        iv_heat.setImageResource(R.drawable.icon_h1);
+                                        iv_vent.setImageResource(R.drawable.icon_v1);
+                                        rb_vent.setRating(0);
+                                        csb.setProgress(0);
+                                        tv_temp.setTextColor(getResources().getColor(R.color.colorLightGray));
+                                        tv_tempunit.setTextColor(getResources().getColor(R.color.colorLightGray));
+                                        tv_cooldesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
+                                        tv_heatdesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
+                                        tv_ventdesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
+                                    }
+                                }
+                            });
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Log.d("TAG", "修改数据失败");
+                    modified = false;
+                }
+            });
+        }
     }
 
     private void csb_animate(final float n) {
         Log.d("TAG", "n=".concat(String.valueOf(n)));
         final float progress = csb.getProgress();
         Log.d("TAG", "progress=".concat(String.valueOf(progress)));
-        Float del = Math.abs((progress - n) / 0.6F);
+        Float del = Math.abs((progress - n) / 0.4F);
         final int delta = del.intValue();
         Log.d("TAG", "delta=".concat(String.valueOf(delta)));
         Observable.interval(20, TimeUnit.MILLISECONDS)
@@ -335,9 +399,21 @@ public class PanelActivity extends AppCompatActivity {
                         }
                         float i = csb.getProgress();
                         if (progress > n) {
-                            csb.setProgress(i - 0.6F);
+                            if ((i - n) < (progress - n) / 3) {
+                                csb.setProgress(i - 0.2F);
+                            } else if ((i - n) > (progress - n) * 2 / 3) {
+                                csb.setProgress(i - 0.6F);
+                            } else {
+                                csb.setProgress(i - 0.4F);
+                            }
                         } else {
-                            csb.setProgress(i + 0.6F);
+                            if ((n - i) < (n - progress) / 3) {
+                                csb.setProgress(i + 0.2F);
+                            } else if ((n - i) > (n - progress) * 2 / 3) {
+                                csb.setProgress(i + 0.6F);
+                            } else {
+                                csb.setProgress(i + 0.4F);
+                            }
                         }
                     }
 
@@ -413,10 +489,11 @@ public class PanelActivity extends AppCompatActivity {
     }
 
     private void startDataSync() {
+        dialogLoading = new SpotsDialog(PanelActivity.this);
+        dialogLoading.show();
         Observable.interval(0, 2, TimeUnit.SECONDS).subscribe(new Observer<Long>() {
             @Override
             public void onSubscribe(Disposable d) {
-
             }
 
             @Override
@@ -445,6 +522,7 @@ public class PanelActivity extends AppCompatActivity {
                             @Override
                             public void onComplete() {
                                 Log.d("TAG", "acService.getAC() onComplete");
+                                dialogLoading.dismiss();
                             }
                         });
             }
@@ -467,6 +545,9 @@ public class PanelActivity extends AppCompatActivity {
         }
         if (!power || modified) {
             return;
+        }
+        if (power != airConditioning.getPower()) {
+            btn_power_onClick(null);
         }
         int temp = airConditioning.getTemperatureSet();
         if (temp > 30) {
@@ -506,6 +587,7 @@ public class PanelActivity extends AppCompatActivity {
 
     private void setAcData() {
         AirConditioning airConditioning = ac;
+        airConditioning.setPower(power);
         airConditioning.setMode(mode);
         airConditioning.setTemperatureSet(temperature);
         airConditioning.setFanspeed(fanspeed);

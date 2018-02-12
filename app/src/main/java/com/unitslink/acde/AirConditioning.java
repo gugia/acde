@@ -10,6 +10,8 @@ import android.os.Parcelable;
 public class AirConditioning {
     private String id;
 
+    private Boolean power = false;
+
     /**
      * 名称
      */
@@ -86,6 +88,14 @@ public class AirConditioning {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Boolean getPower() {
+        return power;
+    }
+
+    public void setPower(Boolean power) {
+        this.power = power;
     }
 
     public String getName() {
