@@ -52,8 +52,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class PanelActivity extends AppCompatActivity {
 
     public static boolean admin = false;
-    //    private final String url = "http://39.104.114.111";
-    public static final String url = "http://10.0.0.12";
+    private final String url = "http://39.104.114.111";
+//    public static final String url = "http://10.0.0.12";
 
     private boolean power = false;
     private boolean powerWill = false;
