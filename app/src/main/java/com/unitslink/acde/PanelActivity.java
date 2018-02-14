@@ -53,7 +53,7 @@ public class PanelActivity extends AppCompatActivity {
 
     public static boolean admin = false;
     private final String url = "http://39.104.114.111";
-//    public static final String url = "http://10.0.0.12";
+//    public static final String url = "http://13.125.133.35";
 
     private boolean power = false;
     private boolean powerWill = false;
@@ -664,8 +664,10 @@ public class PanelActivity extends AppCompatActivity {
         } else {
             location = null;
         }
-        Log.d("TAG", "经度".concat(String.valueOf(location.getLongitude())));
-        Log.d("TAG", "纬度".concat(String.valueOf(location.getLatitude())));
+        if (null != location) {
+            Log.d("TAG", "经度".concat(String.valueOf(location.getLongitude())));
+            Log.d("TAG", "纬度".concat(String.valueOf(location.getLatitude())));
+        }
         return location;
     }
 
