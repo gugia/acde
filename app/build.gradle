@@ -38,4 +38,5 @@ dependencies {
     compile 'me.tankery.lib:circularSeekBar:1.1.4'
     compile 'com.github.EthanCo:PasswordInput:1.5.2'
     compile 'com.github.d-max:spots-dialog:0.7@aar'
+    compile 'io.nlopez.smartlocation:rx:3.3.1'
 }

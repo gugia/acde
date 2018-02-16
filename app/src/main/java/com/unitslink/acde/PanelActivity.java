@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import com.ethanco.lib.PasswordDialog;
 import com.ethanco.lib.abs.OnPositiveButtonListener;
+import com.google.android.gms.location.DetectedActivity;
+import com.google.android.gms.location.LocationRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.timqi.sectorprogressview.ColorfulRingProgressView;
@@ -35,10 +37,21 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import dmax.dialog.SpotsDialog;
+import io.nlopez.smartlocation.OnLocationUpdatedListener;
+import io.nlopez.smartlocation.SmartLocation;
+import io.nlopez.smartlocation.location.LocationProvider;
+import io.nlopez.smartlocation.location.config.LocationAccuracy;
+import io.nlopez.smartlocation.location.config.LocationParams;
+import io.nlopez.smartlocation.location.providers.LocationBasedOnActivityProvider;
+import io.nlopez.smartlocation.location.providers.MultiFallbackProvider;
+import io.nlopez.smartlocation.rx.ObservableFactory;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import me.tankery.lib.circularseekbar.CircularSeekBar;
@@ -355,6 +368,8 @@ public class PanelActivity extends AppCompatActivity {
                                         tv_cooldesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
                                         tv_heatdesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
                                         tv_ventdesc.setTextColor(getResources().getColor(R.color.colorDarkGray));
+                                        crpv.stopAnimateIndeterminate();
+                                        crpv.setVisibility(View.INVISIBLE);
                                     }
                                 }
                             });
@@ -484,8 +499,9 @@ public class PanelActivity extends AppCompatActivity {
     public void btn_send_onClick(View view) {
         crpv.setVisibility(View.VISIBLE);
         crpv.animateIndeterminate();
-        setAcData();
-        sendLocation();
+//        setAcData();
+//        sendLocation();
+        sendLocNew();
     }
 
     private void startDataSync() {
@@ -649,8 +665,10 @@ public class PanelActivity extends AppCompatActivity {
         String provider = "";
         if (prodiverlist.contains(LocationManager.GPS_PROVIDER)) {
             provider = LocationManager.GPS_PROVIDER;
+            //Toast.makeText(this, "Get location with GPS.", Toast.LENGTH_SHORT).show();
         } else if (prodiverlist.contains(LocationManager.NETWORK_PROVIDER)) {
             provider = LocationManager.NETWORK_PROVIDER;
+            //Toast.makeText(this, "Get location with network.", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "No available location provider.", Toast.LENGTH_SHORT).show();
         }
@@ -659,8 +677,6 @@ public class PanelActivity extends AppCompatActivity {
                 location = null;
             }
             location = locationManager.getLastKnownLocation(provider);
-//            CarLocationListener listener = new CarLocationListener(PanelActivity.this, acService);
-//            locationManager.requestSingleUpdate(provider, listener, Looper.getMainLooper());
         } else {
             location = null;
         }
@@ -671,8 +687,7 @@ public class PanelActivity extends AppCompatActivity {
         return location;
     }
 
-    private void sendLocation() {
-        Location loc = locate();
+    private void sendLocation(Location loc) {
         if (null != loc) {
             com.unitslink.acde.Location location = new com.unitslink.acde.Location();
             Double[] coordinates = {loc.getLongitude(), loc.getLatitude()};
@@ -681,15 +696,77 @@ public class PanelActivity extends AppCompatActivity {
             voidCall.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
+                    crpv.stopAnimateIndeterminate();
+                    crpv.setVisibility(View.INVISIBLE);
                     Log.d("TAG", "发送定位成功");
+                    Toast.makeText(PanelActivity.this, "Data send successfully.", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
+                    crpv.stopAnimateIndeterminate();
+                    crpv.setVisibility(View.INVISIBLE);
                     Log.d("TAG", "发送定位失败");
                     Toast.makeText(PanelActivity.this, "Failed to send location data.", Toast.LENGTH_SHORT).show();
                 }
             });
+        } else {
+            crpv.stopAnimateIndeterminate();
+            crpv.setVisibility(View.INVISIBLE);
+            Toast.makeText(PanelActivity.this, "Unable to get location information.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void sendLocNew() {
+        if (!SmartLocation.with(this).location().state().locationServicesEnabled()) {
+            Log.i("TAG", "locationServicesEnabled = false");
+        }
+        if (!SmartLocation.with(this).location().state().isAnyProviderAvailable()) {
+            Log.i("TAG", "isAnyProviderAvailable = false");
+        }
+        if (!SmartLocation.with(this).location().state().isGpsAvailable()) {
+            Log.i("TAG", "isGpsAvailable = false");
+        }
+        if (!SmartLocation.with(this).location().state().isNetworkAvailable()) {
+            Log.i("TAG", "isNetworkAvailable = false");
+        }
+        if (!SmartLocation.with(this).location().state().isPassiveAvailable()) {
+            Log.i("TAG", "isPassiveAvailable = false");
+        }
+        LocationParams top = (new LocationParams.Builder()).setAccuracy(LocationAccuracy.HIGH).setDistance(0.0F).setInterval(100L).build();
+        Observable<Location> locationObservable = ObservableFactory.from(SmartLocation.with(this).location().config(top).oneFix());
+        locationObservable.timeout(10, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Location>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(Location loc) {
+                        Log.i("TAG", "onNext: ".concat(String.valueOf(loc.getLongitude())));
+                        Log.i("TAG", "onNext: ".concat(String.valueOf(loc.getLatitude())));
+                        sendLocation(loc);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("TAG", "onError: yes", e);
+                        Toast.makeText(PanelActivity.this, "Unable to fetch precise location, try in another way.", Toast.LENGTH_SHORT).show();
+                        Location loc = locate();
+                        if (loc != null) {
+                            sendLocation(loc);
+                        } else {
+                            Log.e("TAG", "获取上次都失败了");
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.i("TAG", "onComplete: yes");
+                    }
+                });
     }
 }
