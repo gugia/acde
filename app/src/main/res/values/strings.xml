@@ -28,4 +28,7 @@
     <string name="heating">Heating</string>
     <string name="ventilation">Ventilation</string>
     <string name="datasend">Data Send</string>
+    <!--Toast String-->
+    <string name="fail_on_enter_exclusive">Failed to enter exclusive mode, please check your network.</string>
+    <string name="fail_on_exit_exclusive">Failed to exit exclusive mode, please check your network.</string>
 </resources>

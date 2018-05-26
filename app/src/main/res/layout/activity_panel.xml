@@ -159,7 +159,7 @@
                 app:cs_circle_progress_color="@color/colorSky"
                 app:cs_circle_stroke_width="2dp"
                 app:cs_end_angle="360"
-                app:cs_max="15"
+                app:cs_max="14"
                 app:cs_pointer_halo_border_width="8dp"
                 app:cs_pointer_halo_width="5dp"
                 app:cs_pointer_stroke_width="15dp"

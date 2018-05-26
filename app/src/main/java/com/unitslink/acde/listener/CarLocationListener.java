@@ -1,4 +1,4 @@
-package com.unitslink.acde;
+package com.unitslink.acde.listener;
 
 import android.content.Context;
 import android.location.*;
@@ -6,6 +6,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.unitslink.acde.service.AcService;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,7 +33,7 @@ public class CarLocationListener implements LocationListener {
         if (null != loc) {
             Log.d("TAG", "经度2".concat(String.valueOf(loc.getLongitude())));
             Log.d("TAG", "纬度2".concat(String.valueOf(loc.getLatitude())));
-            com.unitslink.acde.Location location = new com.unitslink.acde.Location();
+            com.unitslink.acde.bean.Location location = new com.unitslink.acde.bean.Location();
             Double[] coordinates = {loc.getLongitude(), loc.getLatitude()};
             location.setCoordinates(coordinates);
             Call<Void> voidCall = acService.setLocation(location);

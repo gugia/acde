@@ -1,4 +1,4 @@
-package com.unitslink.acde;
+package com.unitslink.acde.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;

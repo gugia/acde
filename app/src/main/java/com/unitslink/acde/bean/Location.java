@@ -1,4 +1,4 @@
-package com.unitslink.acde;
+package com.unitslink.acde.bean;
 
 /**
  * Created by gugia on 2018/2/5.

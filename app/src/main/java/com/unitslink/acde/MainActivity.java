@@ -3,13 +3,9 @@ package com.unitslink.acde;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Message;
-import android.os.ResultReceiver;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,14 +21,12 @@ import com.google.gson.Gson;
 import com.jesusm.holocircleseekbar.lib.HoloCircleSeekBar;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
-
-import org.reactivestreams.Subscriber;
+import com.unitslink.acde.bean.AirConditioning;
+import com.unitslink.acde.service.AcService;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
